@@ -1,0 +1,46 @@
+.container {
+  width: 100%;
+  background-color: #f9f9f9;
+  box-shadow: 3px 3px 10px 5px #c5c3c3;
+  /* position: fixed;
+  top: 0;
+  left: 0; */
+}
+
+.centralizer {
+  max-width: 1080px;
+  width: 100%;
+  min-height: 120px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 10px;
+}
+
+.log_container {
+  height: 100%;
+}
+
+.log_container span {
+  font-size: 24px;
+  color: #21b0a6;
+}
+
+.img_logo {
+  height: 50px;
+}
+
+.hightlight {
+  color: #0b4e54 !important;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 15px;
+
+}
