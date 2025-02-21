@@ -1,0 +1,21 @@
+{
+    "client": [
+        {
+            "id": 1,
+            "fullname": "Renato Andre da Silva",
+            "document": "05387312527",
+            "wps": "+5521989576067",
+            "phone": "+5521989576067",
+            "residence": "lote 23, quadra 113"
+        }
+    ],
+    "address": [
+        {
+            "id": 1,
+            "cep": "28894-065",
+            "street": "Duque de Caxias",
+            "neightborhood": "Peroba",
+            "city": "São Gonçalo"
+        }
+    ]
+}

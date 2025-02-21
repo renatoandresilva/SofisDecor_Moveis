@@ -1,0 +1,28 @@
+.form {
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 300px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #eee;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: none;
+}
+
+.form fieldset:nth-of-type(1) {
+    margin-bottom: 30px;
+}
+
+legend {
+    margin-bottom: 15px;
+}
