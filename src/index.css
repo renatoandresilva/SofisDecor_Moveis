@@ -16,6 +16,23 @@ a {
   text-decoration: none;
 }
 
+button {
+  padding: .7em 3.5em;
+  margin-bottom: 10px;
+  border: .8px solid #0b4e54;
+  background-color: #0b4e54;
+  color: #d7e4e4;
+  font-size: clamp(.3rem, 100vh, .9rem);
+  border-radius: 4px;
+  transition: 1s;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #116f76;
+  color: #fff;
+}
+
 body {
   min-height: 100vh;
   background-color: #d7e4e4;

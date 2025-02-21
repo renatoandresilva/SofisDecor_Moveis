@@ -17,7 +17,7 @@ const Header = () => {
         </div>
         <div className={styles.links}>
           <NavLink to='/'><FaHouseChimneyWindow fontSize={18} /></NavLink>
-          <NavLink to='/client'> Clentes</NavLink>
+          <NavLink to='/client'> Clintes</NavLink>
           <NavLink to='/sale'> Vendas</NavLink>
           <NavLink to='/cost'>Custos</NavLink>
           <NavLink to='/controller'>Resumo</NavLink>

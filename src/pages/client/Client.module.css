@@ -1,7 +1,6 @@
 .form {
     max-width: 600px;
     margin: 0 auto;
-    margin-bottom: 300px;
     padding: 10px 20px;
     border-radius: 8px;
     background-color: #eee;
@@ -19,10 +18,27 @@
     border: none;
 }
 
-.form fieldset:nth-of-type(1) {
+.col_1 {
+    margin-bottom: 30px;
+}
+
+.col_2 {
     margin-bottom: 30px;
 }
 
 legend {
     margin-bottom: 15px;
+}
+
+.form input:nth-of-type(1) {
+    flex: 1 0 60%;
+}
+
+.form input:nth-of-type(2) {
+    flex: 0 30%;
+}
+
+.form input:nth-of-type(3),
+.form input:nth-of-type(4) {
+    flex: 1 0 40%;
 }
