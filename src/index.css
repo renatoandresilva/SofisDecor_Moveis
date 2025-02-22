@@ -33,6 +33,20 @@ button:hover {
   color: #fff;
 }
 
+form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background-color: #eee;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
 body {
   min-height: 100vh;
   background-color: #d7e4e4;

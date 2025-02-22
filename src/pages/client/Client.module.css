@@ -1,16 +1,3 @@
-.form {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 10px 20px;
-    border-radius: 8px;
-    background-color: #eee;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 .form fieldset {
     display: flex;
     flex-wrap: wrap;

@@ -17,5 +17,34 @@
             "neightborhood": "Peroba",
             "city": "São Gonçalo"
         }
+    ],
+    "sale": [
+        {
+            "id": 1,
+            "clientId": 1,
+            "product": [
+                "guarda-roupa",
+                "sofa",
+                "tanquinho"
+            ],
+            "price": [
+                350,
+                2500,
+                1900
+            ],
+            "DueDate": "21/02/2025",
+            "signalValue": 325.00,
+            "isInstallment": true,
+            "installmentValue": 266.00,
+            "installmentQTY": 12,
+            "instamentDate": "21/02/2025",
+            "duePayment": [
+                {
+                    "PaymentDate": "21/02/2025",
+                    "installmentNumber": 1,
+                    "value": 0
+                }
+            ]
+        }
     ]
 }
