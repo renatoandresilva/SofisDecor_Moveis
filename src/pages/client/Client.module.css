@@ -29,3 +29,23 @@ legend {
 .form input:nth-of-type(4) {
     flex: 1 0 40%;
 }
+
+.actions {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: right;
+}
+
+.actions button:first-of-type {
+    padding: 0;
+    margin-bottom: 0px;
+    background-color: transparent;
+    letter-spacing: .1rem;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: normal;
+    transition: 1s;
+    margin: 0;
+    color: #2d2a2a;
+    border: none;
+}

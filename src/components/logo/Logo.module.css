@@ -1,0 +1,16 @@
+.logo_container {
+    height: 100%;
+}
+
+.logo_container span {
+    font-size: 24px;
+    color: #21b0a6;
+}
+
+.img_logo {
+    height: 50px;
+}
+
+.hightlight {
+    color: #0b4e54 !important;
+}

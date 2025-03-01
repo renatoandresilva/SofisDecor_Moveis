@@ -39,6 +39,7 @@ form {
   padding: 10px 20px;
   border-radius: 8px;
   background-color: #eee;
+  margin-bottom: 500px;
 
   display: flex;
   flex-direction: column;

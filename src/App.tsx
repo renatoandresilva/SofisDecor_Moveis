@@ -7,7 +7,10 @@ import Sale from './pages/sale';
 import Client from './pages/client';
 import Controller from './pages/controller';
 import Cost from './pages/cost';
+import Login from './pages/login/Login';
 
+
+import Private from './router/Private';
 
 const router = createBrowserRouter([
   {
@@ -18,20 +21,24 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
+        path: '/login',
+        element: <Login />
+      },
+      {
         path: '/sale',
-        element: <Sale />
+        element: <Private>  <Sale />  </Private>
       },
       {
         path: '/client',
-        element: <Client />
+        element: <Private>  <Client />  </Private>
       },
       {
         path: '/cost',
-        element: <Cost />
+        element: <Private>  <Cost />  </Private>
       },
       {
         path: '/controller',
-        element: <Controller />
+        element: <Private> <Controller />  </Private>
       }
     ]
   }

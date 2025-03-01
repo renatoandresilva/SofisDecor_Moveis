@@ -20,6 +20,15 @@
   row-gap: 10px;
 }
 
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 15px;
+
+}
+
+/* 
 .log_container {
   height: 100%;
 }
@@ -35,12 +44,4 @@
 
 .hightlight {
   color: #0b4e54 !important;
-}
-
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  column-gap: 15px;
-
-}
+} */
