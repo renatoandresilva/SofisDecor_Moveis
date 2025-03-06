@@ -19,8 +19,6 @@ import { IClientData } from '../../interfaces/iClient/IClinet';
 
 // Components
 import Input from '../../components/Input/Input'
-import firebase from 'firebase/compat/app';
-
 
 const inputStyle_1: CSSProperties = {
   flex: "1 0 60%",
@@ -115,11 +113,9 @@ const Client = () => {
 
   }
 
-  const handleDeleteClientDoc = async (id: string) => {
-    console.log(id);
+  const handleDeleteClientDoc = async () => {
 
     const confirmAction = confirm('Está ação não poderá  ser desfeita. Tem certeza disso?')
-
 
     if (confirmAction) {
 
@@ -150,7 +146,7 @@ const Client = () => {
     <>
       <h1>Informções do Cliente</h1>
       <div className={styles.actions}>
-        <button onClick={() => { handleDeleteClientDoc(location.state.id) }}>Deletar</button>
+        <button onClick={handleDeleteClientDoc}>Deletar</button>
       </div>
       <div className={styles.container}>
         <form className={styles.form} onSubmit={handleClientDoc}>

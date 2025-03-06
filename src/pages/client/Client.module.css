@@ -1,3 +1,8 @@
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
 .form fieldset {
     display: flex;
     flex-wrap: wrap;
@@ -48,4 +53,10 @@ legend {
     margin: 0;
     color: #2d2a2a;
     border: none;
+}
+
+.form button {
+    padding: .5rem .7rem;
+    margin-top: 20px;
+    align-self: flex-end;
 }

@@ -69,7 +69,8 @@ const Home = () => {
       })
 
       if (props.id !== '') {
-        navigate("/client", { state: props })
+
+        navigate(`/${props.collectionName}`, { state: props })
         return
       }
 

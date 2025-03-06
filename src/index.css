@@ -2,6 +2,8 @@
   --font_family: "Archivo", sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --color_1: #0b4e54;
+  --color_2: #FDFDFD !important;
 }
 
 * {
@@ -12,47 +14,46 @@
   color: #0b4e54;
 }
 
+ul {
+  list-style: none;
+}
+
 a {
   text-decoration: none;
 }
 
 button {
-  padding: .7em 3.5em;
   margin-bottom: 10px;
   border: .8px solid #0b4e54;
   background-color: #0b4e54;
-  color: #d7e4e4;
   font-size: clamp(.3rem, 100vh, .9rem);
   border-radius: 4px;
   transition: 1s;
+  color: var(--color_2);
 }
 
 button:hover {
   cursor: pointer;
   background-color: #116f76;
-  color: #fff;
 }
 
 form {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto 50px;
   padding: 10px 20px;
   border-radius: 8px;
   background-color: #eee;
-  margin-bottom: 500px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
-
 body {
-  min-height: 100vh;
   background-color: #d7e4e4;
 }
 
+.active_btn {
+  padding: .5rem .7rem;
+  margin-top: 20px;
+  align-self: flex-end;
+}
 
 /* background-color: #1a1a1a;  #f9f9f9 #213547 */
 /* #f9f9f9; #d7e4e4 */
