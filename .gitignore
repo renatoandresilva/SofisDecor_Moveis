@@ -1,3 +1,5 @@
+
+sofisDecor/src/service/dataConnection.ts
 # Logs
 .gitignore
 logs
@@ -23,3 +25,26 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+// Temporário
+submitBtn
+
+https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=767328755&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+
+https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=864215456&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+
+
+Created service account github-action-936198858 with Firebase Hosting admin permissions.
++  Uploaded service account JSON to GitHub as secret FIREBASE_SERVICE_ACCOUNT_SOFISCODER.
+i  You can manage your secrets at https://github.com/renatoandresilva/SofisDecor_Moveis/settings/secrets.   
+revogar autorização: https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+
+i  Action required: Push any new workflow file(s) to your repo
+https://sofiscoder.web.app
+
+acesse o repositório GitHub desse projeto. Alterne para a guia "Ações" para ver como o aplicativo está sendo criado e implantado.
+
+Logins e senhas:
+debora@sofisdecormoveis.com / db.souza124
+renato@sofisdecormoveis.com / rt.silva5342
+ismael@sofisdecormoveis.com / ism.oliveira1235

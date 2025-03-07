@@ -43,7 +43,20 @@ hr {
     border: none;
 }
 
+.fild_2 {
+    flex-wrap: wrap;
+}
 
+.fild_2 div:nth-of-type(1),
+.fild_2 div:nth-of-type(2),
+.fild_2 div:nth-of-type(3) {
+    flex-basis: 180px;
+}
+
+.fild_2 div:nth-of-type(4) {
+    flex: 1;
+    margin-top: 10px;
+}
 
 .button {
     padding: 0 5px;

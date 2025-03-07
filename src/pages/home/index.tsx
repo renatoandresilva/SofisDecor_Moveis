@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, where, query, doc } from 'firebase/firestore';
+import { collection, getDocs, where, query } from 'firebase/firestore';
 
 import { db } from '../../service/dataConnection';
 

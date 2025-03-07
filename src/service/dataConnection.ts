@@ -3,17 +3,20 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDlNAD8mHGXJDuP1UMiOjYgAkSwdXBsEsE",
-    authDomain: "sofisdecormoveis-59a34.firebaseapp.com",
-    projectId: "sofisdecormoveis-59a34",
-    storageBucket: "sofisdecormoveis-59a34.firebasestorage.app",
-    messagingSenderId: "988820068108",
-    appId: "1:988820068108:web:473ae65bf31ea1ce7edb29"
+    apiKey: "AIzaSyC5cis5uKn3FQFQ9j3pfVLrPuDOh-l9RuA",
+    authDomain: "sofiscoder.firebaseapp.com",
+    projectId: "sofiscoder",
+    storageBucket: "sofiscoder.firebasestorage.app",
+    messagingSenderId: "147094063851",
+    appId: "1:147094063851:web:01f64f7b852ef89e2d8cae",
+    measurementId: "G-QX9DX0KVB3"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 export { auth, db };
+
+// import { getAnalytics } from "firebase/analytics";

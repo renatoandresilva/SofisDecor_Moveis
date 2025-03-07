@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 
 import styles from './Client.module.css'
+import '../../App.css'
 // Intefaces
 import { IClientData } from '../../interfaces/iClient/IClinet';
 
@@ -37,6 +38,8 @@ const inputStyle_2: CSSProperties = {
 }
 
 const Client = () => {
+  const [loading, setLoading] = useState(false)
+  const [onSave, setOnsave] = useState(false)
 
   const [name, setName] = useState<string>('');
   const [document, setDocument] = useState<string>('');
@@ -64,41 +67,16 @@ const Client = () => {
     clientCity: city.trim()
   };
 
-  useEffect(() => {
-    if (location.state !== null) {
-
-      const clientRef = collection(db, `${location.state.collectionName}`)
-      const q = query(clientRef, where("clientName", "==", `${location.state.search}`))
-
-      getDocs(q)
-        .then(Response => {
-          Response.docs.forEach(doc => {
-
-            setName(doc.data().clientName)
-            setDocument(doc.data().clientDoc)
-            setWsp(doc.data().clientWsp)
-            setCall(doc.data().clientFone)
-            setResidence(doc.data().clientResidence)
-            setZipcode(doc.data().clentZipcode)
-            setStreet(doc.data().clientStreet)
-            setNeighborhood(doc.data().clientNeighborhood)
-            setCity(doc.data().clientCity)
-            setDocId(doc.id)
-          });
-        })
-
-    }
-
-  }, []);
-
+  // Handle Functions
   const handleClientDoc = async (e: FormEvent) => {
     e.preventDefault();
-
+    setOnsave(true)
     if (location.state === null) {
       await addDoc(collection(db, "client"), clientDoc)
         .then(() => {
           alert('Cadastrado com sucesso!');
           cleanUseState();
+          setOnsave(false)
         })
         .catch(err => console.log('Não foi possível realizar esta operação: ' + err))
     } else {
@@ -142,6 +120,39 @@ const Client = () => {
     setCity('')
   }
 
+  // Use Effects
+  useEffect(() => {
+    if (location.state !== null) {
+
+      const clientRef = collection(db, `${location.state.collectionName}`)
+      const q = query(clientRef, where("clientName", "==", `${location.state.search}`))
+
+      getDocs(q)
+        .then(Response => {
+          Response.docs.forEach(doc => {
+
+            setName(doc.data().clientName)
+            setDocument(doc.data().clientDoc)
+            setWsp(doc.data().clientWsp)
+            setCall(doc.data().clientFone)
+            setResidence(doc.data().clientResidence)
+            setZipcode(doc.data().clentZipcode)
+            setStreet(doc.data().clientStreet)
+            setNeighborhood(doc.data().clientNeighborhood)
+            setCity(doc.data().clientCity)
+            setDocId(doc.id)
+          });
+        })
+
+    }
+
+  }, []);
+
+  useEffect(() => {
+    onSave ? setLoading(true) : setLoading(false)
+  }, [onSave])
+
+
   return (
     <>
       <h1>Informções do Cliente</h1>
@@ -158,12 +169,6 @@ const Client = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            <Input
-              type='text'
-              placeholder='Digite CPF ou CNPJ...'
-              value={document}
-              onChange={(e) => setDocument(e.target.value)}
-            />
 
             <Input
               type='tel'
@@ -171,12 +176,7 @@ const Client = () => {
               value={wsp}
               onChange={(e) => setWsp(e.target.value)}
             />
-            <Input
-              type='tel'
-              placeholder='ligação...'
-              value={call}
-              onChange={(e) => setCall(e.target.value)}
-            />
+
             <Input
               type='text'
               placeholder='Residência: lote e quadra, apt, bloco...'
@@ -213,7 +213,13 @@ const Client = () => {
               onChange={(e) => setCity(e.target.value)}
             />
           </fieldset>
-          <button type="submit">{location.state === null ? "Cadastar" : "Atualizar"}</button>
+          {
+            !loading ? (<button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>
+              {!loading ? "Confirmar" : "Salvando dados..."}
+            </button>) : (
+              (<div className="loader"></div>)
+            )
+          }
         </form>
       </div>
     </>

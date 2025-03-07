@@ -7,11 +7,13 @@ import { db } from "../../service/dataConnection";
 
 import Input from "../../components/Input/Input"
 import styles from "./Sale.module.css";
+import '../../App.css'
 // Interfaces
 import { ISale, PaymentInfo, CurrentProduct } from "../../interfaces/ISale";
 
 const Sale = () => {
   const [loading, setLoading] = useState(false)
+  const [onSave, setOnsave] = useState(false)
 
   const [nameProduct, setNameProduct] = useState<string>('');
   const [priceProduct, setPriceProduct] = useState<number>(0);
@@ -49,6 +51,7 @@ const Sale = () => {
   // handles functions
   const handleSale = async (e: FormEvent) => {
     e.preventDefault();
+    setOnsave(true);
 
     if (location.state === null) {
 
@@ -71,6 +74,7 @@ const Sale = () => {
             if (res.id !== "") {
               alert("Ação executada com sucesso!")
 
+              setOnsave(false)
               navigate('/')
               return
             }
@@ -236,6 +240,11 @@ const Sale = () => {
     }
   }, [refreshPayments])
 
+  useEffect(() => {
+    onSave ? setLoading(true) : setLoading(false)
+  }, [onSave])
+
+
   return (
     <div>
       <h1>Informações de Vendas</h1>
@@ -333,7 +342,13 @@ const Sale = () => {
           </fieldset>
         ) : ("")
         }
-        <button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>{!loading ? "Confirmar" : "Salvando dados..."}</button>
+        {
+          !loading ? (<button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>
+            {!loading ? "Confirmar" : "Salvando dados..."}
+          </button>) : (
+            (<div className="loader"></div>)
+          )
+        }
       </form>
       <section className={styles.list}>
         <h4>Produtos</h4>
