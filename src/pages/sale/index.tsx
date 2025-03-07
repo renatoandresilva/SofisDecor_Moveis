@@ -375,7 +375,6 @@ const Sale = () => {
       </section>
     </div>
   )
-
 }
 
 export default Sale 
