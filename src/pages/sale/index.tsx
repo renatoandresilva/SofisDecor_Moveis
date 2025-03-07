@@ -244,7 +244,6 @@ const Sale = () => {
     onSave ? setLoading(true) : setLoading(false)
   }, [onSave])
 
-
   return (
     <div>
       <h1>Informações de Vendas</h1>
