@@ -42,9 +42,7 @@ const Client = () => {
   const [onSave, setOnsave] = useState(false)
 
   const [name, setName] = useState<string>('');
-  const [document, setDocument] = useState<string>('');
   const [wsp, setWsp] = useState<string>('');
-  const [call, setCall] = useState<string>('');
   const [residence, setResidence] = useState('');
   const [zipcode, setZipcode] = useState<string>('')
   const [street, setStreet] = useState<string>('')
@@ -57,9 +55,7 @@ const Client = () => {
 
   const clientDoc: IClientData = {
     clientName: name.trim(),
-    clientDoc: document.trim(),
     clientWsp: wsp.trim(),
-    clientFone: call.trim(),
     clientResidence: residence.trim(),
     clentZipcode: zipcode.trim(),
     clientStreet: street.trim(),

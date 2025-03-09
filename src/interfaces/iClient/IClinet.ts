@@ -7,9 +7,7 @@ export interface IClientePprops {
 
 export interface IClientData {
     clientName: string;
-    clientDoc: string;
     clientWsp: string;
-    clientFone: string;
     clientResidence: string;
     clentZipcode: string;
     clientStreet: string;
