@@ -106,9 +106,7 @@ const Client = () => {
   // Functions
   const cleanUseState = (): void => {
     setName('');
-    setDocument('')
     setWsp('')
-    setCall('')
     setResidence('')
     setZipcode('')
     setStreet('')
@@ -128,9 +126,7 @@ const Client = () => {
           Response.docs.forEach(doc => {
 
             setName(doc.data().clientName)
-            setDocument(doc.data().clientDoc)
             setWsp(doc.data().clientWsp)
-            setCall(doc.data().clientFone)
             setResidence(doc.data().clientResidence)
             setZipcode(doc.data().clentZipcode)
             setStreet(doc.data().clientStreet)
