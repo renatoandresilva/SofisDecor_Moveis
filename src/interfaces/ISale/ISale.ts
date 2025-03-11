@@ -12,12 +12,13 @@ export type CurrentProduct = {
 
 export interface ISale {
     products: CurrentProduct[];
-    dueDate?: string
+    purchcaseDate?: string
+    dueDate?: number;
+    initVlue?: number;
     qtdInstallment?: number;
     valueInstallment?: number;
     paymentInfo?: PaymentInfo[];
     docClientId?: string;
     clientName?: string;
-
 }
 

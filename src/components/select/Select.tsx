@@ -1,4 +1,5 @@
-import { SelectProps } from '../../interfaces/input/InputProps';
+import { SelectProps } from '../../interfaces/IElements/IElements';
+import '../../App.css'
 
 const Select = (props: SelectProps) => {
 
@@ -8,10 +9,10 @@ const Select = (props: SelectProps) => {
             <select
                 {...props}
             >
-                <option value="" >Selecione a origem da busca... </option>
+                <option value="" >{props.placeholder}</option>
                 {
-                    props.values.map((value) => (
-                        <option key={value} value={value} {...props.option}>{value}</option>
+                    props.values.map((value, index) => (
+                        value === props.str ? (<option key={index} value={value} {...props.option} selected>{value}</option>) : (<option key={index} value={value} {...props.option}>{value}</option>)
                     ))
                 }
             </select>

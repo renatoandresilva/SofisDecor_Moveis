@@ -22,6 +22,14 @@ a {
   text-decoration: none;
 }
 
+select {
+  overflow-y: auto;
+}
+
+option {
+  white-space: initial;
+}
+
 button {
   margin-bottom: 10px;
   border: .8px solid #0b4e54;

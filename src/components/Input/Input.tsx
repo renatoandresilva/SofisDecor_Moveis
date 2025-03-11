@@ -1,4 +1,4 @@
-import { InputProps } from "../../interfaces/input/InputProps";
+import { InputProps } from "../../interfaces/IElements/IElements";
 import styles from "./Input.module.css"
 
 const Input = (props: InputProps) => {

@@ -1,19 +1,27 @@
-import { InputHTMLAttributes, SelectHTMLAttributes } from "react"
+import { InputHTMLAttributes, SelectHTMLAttributes, ButtonHTMLAttributes } from "react"
 import { CSSProperties } from 'react';
 
+// Input
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     style?: CSSProperties | undefined;
 }
 
+// Select
 type Option = React.OptionHTMLAttributes<HTMLOptionElement>
-type seleElementRef = React.RefObject<HTMLSelectElement | null>
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     label?: string;
+    placeholder?: string;
     option?: Option;
     values: string[];
     style?: CSSProperties | undefined;
-    elementRef?: seleElementRef
+    str?: string;
 }
 
+// Btn Submit
+export interface IButton extends ButtonHTMLAttributes<HTMLButtonElement> {
+    title: string;
+    style?: CSSProperties | undefined;
+    click(): void
+}

@@ -1,7 +1,15 @@
 
 const Cost = () => {
+
+  function test() {
+    console.log("esta");
+
+  }
+
   return (
-    <div>Cost</div>
+    <form>
+
+    </form>
   )
 }
 

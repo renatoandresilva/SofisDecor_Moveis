@@ -94,6 +94,7 @@ const Home = () => {
       < form className={styles.form} onSubmit={handleGetDate}>
         <Select
           values={options}
+          placeholder='Buscar por cliente, venda, custo, ...'
           style={selectStyle}
           onChange={(e) => setSelected(e.target.value)}
         />

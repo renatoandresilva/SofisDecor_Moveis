@@ -1,54 +1,74 @@
-import { FormEvent, useState, useEffect } from "react";
-import { HiPencilSquare } from "react-icons/hi2";
-import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { useLocation, useNavigate } from "react-router-dom";
+import { FormEvent, useState, useEffect } from "react"
+import { HiPencilSquare } from "react-icons/hi2"
+import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { useLocation, useNavigate } from "react-router-dom"
 
-import { db } from "../../service/dataConnection";
+import { db } from "../../service/dataConnection"
+import { CSSProperties } from 'react';
 
 import Input from "../../components/Input/Input"
+import Select from "../../components/select/Select"
+
 import styles from "./Sale.module.css";
 import '../../App.css'
-// Interfaces
-import { ISale, PaymentInfo, CurrentProduct } from "../../interfaces/ISale";
+// Interfaces and Types
+import { ISale, PaymentInfo, CurrentProduct } from "../../interfaces/ISale/ISale";
+import { IFirestore } from "../../interfaces/IUtilis/IUtilitis";
 
 const Sale = () => {
   const [loading, setLoading] = useState(false)
   const [onSave, setOnsave] = useState(false)
 
+  const [str, setStr] = useState("")
   const [nameProduct, setNameProduct] = useState<string>('');
   const [priceProduct, setPriceProduct] = useState<number>(0);
   const [qtdInstallment, setQtyInstallment] = useState<number>(0);
   const [valueInstallment, setValueInstallment] = useState<number>(0);
-  const [dueDate, setDueDate] = useState<string>('');
+  const [dueDate, setDueDate] = useState<number>(0);
+  const [purchcaseDate, setPurchcaseDate] = useState<string>('');
+  const [initVlue, setInitValue] = useState<number>(0);
 
   const [numberInstallmentPaid, setNumberInstallmentPaid] = useState<number>(0);
   const [valueInstallmentPaid, setValueInstallmentPaid] = useState<number>(0);
-  const [nameClient, setNameClient] = useState<string>('')
+  const [nameClient, setNameClient] = useState<string>('');
 
   const [updateProductdByiIndex, setUpdateProductByiIndex] = useState<number>(-1);
   const [updatePaymentdByiIndex, setUpdatePaymentByiIndex] = useState<number>(-1);
-  const [saleId, setSaleId] = useState<string>('')
+  const [saleId, setSaleId] = useState<string>('');
 
-  const [currentProducts, setCurrentProducts] = useState<CurrentProduct[]>([])
+  const [currentProducts, setCurrentProducts] = useState<CurrentProduct[]>([]);
   const [paymentList, setPaymentList] = useState<PaymentInfo[]>([]);
-  const [refreshProducts, setRefreshProducts] = useState<boolean>(false)
-  const [refreshPayments, setRefreshPayments] = useState<boolean>(false)
+  const [clientList, setClientList] = useState<string[]>([]);
 
-  const location = useLocation()
-  const navigate = useNavigate()
-  let index: number = 0
+  const [refreshProducts, setRefreshProducts] = useState<boolean>(false);
+  const [refreshPayments, setRefreshPayments] = useState<boolean>(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  let index: number = 0;
 
   const saleData: ISale = {
     products: currentProducts,
+    purchcaseDate: purchcaseDate,
+    initVlue: initVlue,
     qtdInstallment: qtdInstallment,
     valueInstallment: valueInstallment,
-    dueDate: `${dueDate}`.trim(),
+    dueDate: dueDate,
     paymentInfo: paymentList,
     docClientId: '',
     clientName: `${nameClient}`.trim()
   }
 
-  // handles functions
+  const selectStyle: CSSProperties = {
+    flex: "1 0 60%",
+    height: "40px",
+    width: "100%",
+    padding: ".7rem 2em",
+    border: ".8px solid #ccc",
+    borderRadius: "6px",
+  }
+
+  // handles functions 
   const handleSale = async (e: FormEvent) => {
     e.preventDefault();
     setOnsave(true);
@@ -183,6 +203,9 @@ const Sale = () => {
     return
   }
 
+  const handleAddSelectClient = (client: string) => {
+    setNameClient(client)
+  }
   // Functions
   function getDate(): string {
 
@@ -195,8 +218,32 @@ const Sale = () => {
     return `${currDay < 10 ? "0" + currDay : currDay}/${currMonth < 10 ? "0" + currMonth : currMonth}/${currYear}`
   }
 
+  async function getDatefromDatabse(databse: IFirestore, collectionName: string, attr: string): Promise<string[]> {
+    console.log('estou na função')
+    let list: string[] = []
+
+    console.log(collection(databse, collectionName));
+
+
+    const dataQuery = query(collection(databse, collectionName), where(attr.trim(), "!=", ""))
+    const dataSnap = await getDocs(dataQuery)
+
+    dataSnap.forEach(snap => {
+
+      list.push(snap.data().clientName);
+    });
+
+    return list
+  }
+
   // UseEffects
   useEffect(() => {
+    const getList = getDatefromDatabse(db, "client", "clientName")
+
+    getList.then(resp => {
+      setClientList(resp)
+    })
+
     if (location.state !== null) {
 
       const saleRef = collection(db, `${location.state.collectionName}`)
@@ -206,12 +253,15 @@ const Sale = () => {
         .then(Response => {
           Response.docs.forEach(doc => {
             setSaleId(doc.id)
-            setNameClient(doc.data().clientName)
-            setDueDate(doc.data().dueDate)
             setCurrentProducts(doc.data().products)
-            setPaymentList(doc.data().paymentInfo)
+            setPurchcaseDate(doc.data().purchcaseDate)
+            setInitValue(doc.data().initVlue)
             setQtyInstallment(doc.data().qtdInstallment)
             setValueInstallment(doc.data().valueInstallment)
+            setDueDate(doc.data().dueDate)
+            setPaymentList(doc.data().paymentInfo)
+            setNameClient(doc.data().clientName)
+            setStr(doc.data().clientName)
           });
         })
     }
@@ -282,7 +332,15 @@ const Sale = () => {
           <legend>Dados de parcelamento:</legend>
           <div>
             <Input
-              type='date'
+              type='number'
+              label='Entrada'
+              value={initVlue}
+              onChange={(e) => setInitValue(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <Input
+              type='number'
               label='Vencimento'
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
@@ -306,11 +364,20 @@ const Sale = () => {
           </div>
           <div>
             <Input
-              type='text'
-              label="Nome do cliente"
-              placeholder='Ex: Renato, Debora, Victoria...'
-              value={nameClient}
-              onChange={(e) => setNameClient(e.target.value)}
+              type='date'
+              label='Data da Compra'
+              value={purchcaseDate}
+              onChange={(e) => setPurchcaseDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <Select
+              values={clientList}
+              label="Selecione o cliente"
+              placeholder="cliente..."
+              style={selectStyle}
+              str={str}
+              onChange={(e) => handleAddSelectClient(e.target.value)}
             />
           </div>
         </fieldset>
