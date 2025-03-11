@@ -343,7 +343,7 @@ const Sale = () => {
               type='number'
               label='Vencimento'
               value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              onChange={(e) => setDueDate(Number(e.target.value))}
             />
           </div>
           <div>
