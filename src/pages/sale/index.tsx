@@ -4,22 +4,20 @@ import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } 
 import { useLocation, useNavigate } from "react-router-dom"
 
 import { db } from "../../service/dataConnection"
-import { CSSProperties } from 'react';
 
 import Input from "../../components/Input/Input"
-import Select from "../../components/select/Select"
 
 import styles from "./Sale.module.css";
 import '../../App.css'
 // Interfaces and Types
 import { ISale, PaymentInfo, CurrentProduct } from "../../interfaces/ISale/ISale";
 import { IFirestore } from "../../interfaces/IUtilis/IUtilitis";
+import Dropdown from "../../components/dropdown/Dropdown"
 
 const Sale = () => {
   const [loading, setLoading] = useState(false)
   const [onSave, setOnsave] = useState(false)
 
-  const [str, setStr] = useState("")
   const [nameProduct, setNameProduct] = useState<string>('');
   const [priceProduct, setPriceProduct] = useState<number>(0);
   const [qtdInstallment, setQtyInstallment] = useState<number>(0);
@@ -57,15 +55,6 @@ const Sale = () => {
     paymentInfo: paymentList,
     docClientId: '',
     clientName: `${nameClient}`.trim()
-  }
-
-  const selectStyle: CSSProperties = {
-    flex: "1 0 60%",
-    height: "40px",
-    width: "100%",
-    padding: ".7rem 2em",
-    border: ".8px solid #ccc",
-    borderRadius: "6px",
   }
 
   // handles functions 
@@ -204,6 +193,8 @@ const Sale = () => {
   }
 
   const handleAddSelectClient = (client: string) => {
+    console.log(client);
+
     setNameClient(client)
   }
   // Functions
@@ -261,7 +252,6 @@ const Sale = () => {
             setDueDate(doc.data().dueDate)
             setPaymentList(doc.data().paymentInfo)
             setNameClient(doc.data().clientName)
-            setStr(doc.data().clientName)
           });
         })
     }
@@ -371,14 +361,7 @@ const Sale = () => {
             />
           </div>
           <div>
-            <Select
-              values={clientList}
-              label="Selecione o cliente"
-              placeholder="cliente..."
-              style={selectStyle}
-              str={str}
-              onChange={(e) => handleAddSelectClient(e.target.value)}
-            />
+            <Dropdown contents={clientList} label="Cliente" change={handleAddSelectClient} update={nameClient} />
           </div>
         </fieldset>
         <hr></hr>

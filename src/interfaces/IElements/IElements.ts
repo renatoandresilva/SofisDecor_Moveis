@@ -25,3 +25,23 @@ export interface IButton extends ButtonHTMLAttributes<HTMLButtonElement> {
     style?: CSSProperties | undefined;
     click(): void
 }
+
+//Dopdown
+export type Dopdown = {
+    contents: string[],
+    label?: string,
+    placeholder?: string,
+    owner_styles?: CSSProperties,
+    change: (str: string) => void
+    update?: string,
+}
+
+
+// const selectStyle: CSSProperties = {
+//     flex: "1 0 60%",
+//     height: "40px",
+//     width: "100%",
+//     padding: ".7rem 2em",
+//     border: ".8px solid #ccc",
+//     borderRadius: "6px",
+// }

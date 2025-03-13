@@ -1,7 +1,7 @@
 export interface IClientePprops {
     isGetDoc?: boolean | null;
     id?: string;
-    collectionName?: string
+    collectionName?: string;
     search?: string;
 }
 

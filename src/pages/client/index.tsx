@@ -60,7 +60,7 @@ const Client = () => {
     clentZipcode: zipcode.trim(),
     clientStreet: street.trim(),
     clientNeighborhood: neighborhood.trim(),
-    clientCity: city.trim()
+    clientCity: city.trim(),
   };
 
   // Handle Functions
@@ -143,7 +143,6 @@ const Client = () => {
   useEffect(() => {
     onSave ? setLoading(true) : setLoading(false)
   }, [onSave])
-
 
   return (
     <>
