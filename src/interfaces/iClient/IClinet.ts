@@ -6,6 +6,7 @@ export interface IClientePprops {
 }
 
 export interface IClientData {
+    clientId?: string;
     clientName: string;
     clientWsp: string;
     clientResidence: string;

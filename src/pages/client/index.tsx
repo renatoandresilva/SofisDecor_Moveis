@@ -49,6 +49,10 @@ const Client = () => {
   const [neighborhood, setNeighborhood] = useState<string>('')
   const [city, setCity] = useState<string>('')
   const [docId, setDocId] = useState('')
+  const [filter, setFilter] = useState('')
+
+  const [filterd, setFiltered] = useState<IClientData[]>([])
+  const [table, setTable] = useState<IClientData[]>([])
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -114,7 +118,40 @@ const Client = () => {
     setCity('')
   }
 
+  const handleFilter = () => {
+
+    const filtered = table.filter(el => el.clientName === filter)
+    setFiltered(filtered)
+
+  }
+
   // Use Effects
+  useEffect(() => {
+    const querySnapshot = getDocs(collection(db, 'client'))
+
+    let list: IClientData[] = []
+
+    querySnapshot.then(snapshot => {
+      snapshot.forEach(doc => {
+        const item: IClientData = {
+          clientId: doc.id,
+          clientName: doc.data().clientName,
+          clientWsp: doc.data().clientWsp,
+          clientResidence: doc.data().clientResidence,
+          clentZipcode: doc.data().clentZipcode,
+          clientStreet: doc.data().clientStreet,
+          clientNeighborhood: doc.data().clientNeighborhood,
+          clientCity: doc.data().clientCity,
+        }
+
+        setTable(el => [...el, item])
+
+      })
+    })
+    console.log(list.length);
+
+  }, [])
+
   useEffect(() => {
     if (location.state !== null) {
 
@@ -144,13 +181,19 @@ const Client = () => {
     onSave ? setLoading(true) : setLoading(false)
   }, [onSave])
 
+  useEffect(() => {
+    if (filter === "") {
+      setFiltered([])
+    }
+  }, [filter])
+
   return (
-    <>
-      <h1>Informções do Cliente</h1>
-      <div className={styles.actions}>
-        <button onClick={handleDeleteClientDoc}>Deletar</button>
-      </div>
-      <div className={styles.container}>
+    <main className={styles.container}>
+      <section>
+        <h1>Informções do Cliente</h1>
+        <div className={styles.actions}>
+          <button onClick={handleDeleteClientDoc}>Deletar</button>
+        </div>
         <form className={styles.form} onSubmit={handleClientDoc}>
           <fieldset className={styles.col_1}>
             <legend>Dados do cliente</legend>
@@ -212,9 +255,67 @@ const Client = () => {
             )
           }
         </form>
-      </div>
-    </>
+      </section>
+
+      <section className={styles.table}>
+        <div className={styles.filter}>
+          <input
+            type='text'
+            placeholder='Pesquisar cliente...'
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+          {
+            filterd.length === 0 ? <button type='button' onClick={handleFilter}>Buscar</button> : ""
+          }
+        </div>
+        <div className={styles.head}>
+          <div>
+            <span>Nome</span>
+          </div>
+          <div>
+            <span>Whatsapp</span>
+          </div>
+          <div>
+            <span>Residência</span>
+          </div>
+          <div>
+            <span>Rua</span>
+          </div>
+          <div>
+            <span>Bairro</span>
+          </div>
+          <div>
+            <span>Cidade</span>
+          </div>
+        </div>
+        <ul className={styles.table_list}>
+          {
+            filterd.length === 0 ? table.map((doc, index) => (
+              <li key={index}>
+                <span>{doc.clientName}</span>
+                <span>{doc.clientWsp}</span>
+                <span>{doc.clientResidence}</span>
+                <span>{doc.clientStreet}</span>
+                <span>{doc.clientNeighborhood}</span>
+                <span>{doc.clientCity}</span>
+              </li>
+            )) : filterd.map((doc, index) => (
+              <li key={index}>
+                <span>{doc.clientName}</span>
+                <span>{doc.clientWsp}</span>
+                <span>{doc.clientResidence}</span>
+                <span>{doc.clientStreet}</span>
+                <span>{doc.clientNeighborhood}</span>
+                <span>{doc.clientCity}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </main>
   )
 }
 
-export default Client 
+export default Client
+
