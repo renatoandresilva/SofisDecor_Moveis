@@ -4,6 +4,7 @@ import Layout from './components/layout';
 // pages
 import Home from './pages/home';
 import Sale from './pages/sale';
+import SaleList from './pages/saleList';
 import Client from './pages/client';
 import Controller from './pages/controller';
 import Cost from './pages/cost';
@@ -26,14 +27,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/sale',
-        element: <Private>  <Sale />  </Private>
+        element: <Private> <SaleList /> </Private>
       },
+      {
+        path: '/sale/:id?',
+        element: <Private> <Sale />  </Private>
+      },
+
       {
         path: '/client',
         element: <Private>  <Client />  </Private>
       },
       {
-        path: '/cost',
+        path: '/cost/:id?',
         element: <Private>  <Cost />  </Private>
       },
       {

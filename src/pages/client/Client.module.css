@@ -11,48 +11,90 @@
 .form {
     width: 450px;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.form fieldset legend {
+    margin-bottom: 20px;
 }
 
 .form fieldset {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 5px;
+    width: 100%;
+    text-align: left;
     border: none;
 }
 
 .col_1 {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-.col_2 {
-    margin-bottom: 30px;
+.col_1 div:nth-of-type(1) {
+    flex: 1;
 }
 
-legend {
-    margin-bottom: 15px;
+.col_1 div:nth-of-type(2) {
+    flex: 0 0 150px;
 }
 
-.form input:nth-of-type(1) {
-    flex: 1 0 60%;
+.col_1 div:nth-of-type(3) {
+    width: 100%;
 }
 
-.form input:nth-of-type(2) {
-    flex: 0 30%;
+.col_1 div:nth-of-type(1) {
+    flex: 1;
 }
 
-.form input:nth-of-type(3),
-.form input:nth-of-type(4) {
-    flex: 1 0 40%;
+.col_1 div:nth-of-type(2) {
+    flex: 0 0 150px;
+}
+
+.col_1 div:nth-of-type(3) {
+    width: 100%;
+}
+
+.col_2 div:nth-of-type(1) {
+    flex: 0 1 150px;
+}
+
+.col_2 div:nth-of-type(2) {
+    flex: 1;
+}
+
+.col_2 div:nth-of-type(2),
+.col_2 div:nth-of-type(4) {
+    flex: 1;
+}
+
+.btn_submit {
+    width: 100%;
+    text-align: right;
+
+}
+
+.btn_submit button:last-child {
+    margin-left: 40px;
+    background-color: #22737b;
+    border: none;
+
+}
+
+.btn_submit button:last-child:hover {
+    background-color: #0b4e54;
+
+
 }
 
 .actions {
-    max-width: 600px;
+    width: 100%;
     margin: 0 auto;
-    text-align: right;
+    position: relative;
+    height: 50px;
 }
 
-.actions button:first-of-type {
+.actions button {
     padding: 0;
     margin-bottom: 0px;
     background-color: transparent;
@@ -64,9 +106,12 @@ legend {
     margin: 0;
     color: #2d2a2a;
     border: none;
+    position: absolute;
+    bottom: 5px;
+    left: 380px;
 }
 
-.form button {
+.form div button {
     padding: .5rem .7rem;
     margin-top: 20px;
     align-self: flex-end;
@@ -78,6 +123,7 @@ legend {
     background-color: #eee;
     overflow-y: auto;
     position: relative;
+    align-self: flex-start;
 }
 
 .table_list {
@@ -93,6 +139,11 @@ legend {
 
 .table_list li {
     width: 100%;
+    display: flex;
+}
+
+.table_list li:hover {
+    cursor: pointer;
 }
 
 .table li:nth-of-type(2n) {
@@ -116,7 +167,7 @@ legend {
 
 .table li {
     display: flex;
-    justify-content: space-around;
+    flex: 1;
     text-align: center;
 }
 
@@ -124,11 +175,33 @@ legend {
     background-color: #c9c6c6;
 }
 
+.table li div:first-child {
+    background-color: transparent;
+    flex: 1;
+    border-right: .8px solid #302e2e;
+    border-bottom: .8px solid #302e2e;
+}
+
+.table li div:last-child {
+    background-color: transparent;
+}
+
+.table li div:last-child button {
+    background-color: #2d2a2a;
+    padding: 3px;
+    font-style: italic;
+}
+
+
+.table li div span {
+    color: #2d2a2a;
+}
 
 .table li span {
     padding: 10px;
     max-width: 80px;
     font-size: 12px;
+    flex: 1;
 }
 
 .filter {
@@ -149,7 +222,6 @@ legend {
     left: 0;
 }
 
-
 .filter button {
     margin: 0;
     padding: .5px 2px;
@@ -158,4 +230,9 @@ legend {
     right: 15px;
     border: 0;
     font-size: 15px;
+}
+
+.li_actions {
+    display: flex;
+    column-gap: 10px;
 }

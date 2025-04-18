@@ -14,6 +14,10 @@
   color: #0b4e54;
 }
 
+body {
+  background-color: #252524;
+}
+
 ul {
   list-style: none;
 }
@@ -34,7 +38,6 @@ button {
   margin-bottom: 10px;
   border: .8px solid #0b4e54;
   background-color: #0b4e54;
-  font-size: clamp(.3rem, 100vh, .9rem);
   border-radius: 4px;
   transition: 1s;
   color: var(--color_2);

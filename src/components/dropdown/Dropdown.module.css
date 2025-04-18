@@ -1,12 +1,16 @@
-.container {
+.dropdown {
     width: 100%;
     position: relative;
 }
 
-.container_input {
+.dropdown_input {
     width: 100%;
-    position: relative;
     border-radius: 6px;
+}
+
+.dropdown_input_container {
+    position: relative;
+    border-radius: inherit;
 }
 
 .input {
@@ -16,7 +20,6 @@
     padding: 10px 20px;
     border-radius: inherit;
 }
-
 
 .btn {
     margin: 0;
@@ -41,7 +44,6 @@
     border-radius: 8px;
     background-color: #d5d2d2;
     position: absolute;
-    top: -160px;
 }
 
 .options li {
@@ -74,4 +76,20 @@
 
 .btn_select:hover {
     background-color: transparent;
+}
+
+.clean {
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    top: 28%;
+    right: 5%;
+}
+
+.clean:hover {
+    background-color: #ccc;
 }

@@ -1,4 +1,4 @@
-import { CSSProperties, useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { db } from "../../service/dataConnection";
@@ -14,28 +14,14 @@ import {
 } from 'firebase/firestore'
 
 import styles from './Client.module.css'
+import { custom_style } from '../../interfaces/custom_styles/genral'
 import '../../App.css'
 // Intefaces
 import { IClientData } from '../../interfaces/iClient/IClinet';
+import { deleteFunc } from '../../interfaces/IUtilis/IUtilitis';
 
 // Components
 import Input from '../../components/Input/Input'
-
-const inputStyle_1: CSSProperties = {
-  flex: "1 0 60%",
-  height: "40px",
-  padding: "0 10px",
-  border: ".8px solid #ccc",
-  borderRadius: "6px",
-}
-
-const inputStyle_2: CSSProperties = {
-  flex: "1 0 30%",
-  height: "40px",
-  padding: "0 10px",
-  border: ".8px solid #ccc",
-  borderRadius: "6px",
-}
 
 const Client = () => {
   const [loading, setLoading] = useState(false)
@@ -70,8 +56,10 @@ const Client = () => {
   // Handle Functions
   const handleClientDoc = async (e: FormEvent) => {
     e.preventDefault();
+    console.log(docId);
+
     setOnsave(true)
-    if (location.state === null) {
+    if (docId === "") {
       await addDoc(collection(db, "client"), clientDoc)
         .then(() => {
           alert('Cadastrado com sucesso!');
@@ -81,7 +69,7 @@ const Client = () => {
         .catch(err => console.log('Não foi possível realizar esta operação: ' + err))
     } else {
 
-      const odData = doc(db, `${location.state.collectionName}`, docId)
+      const odData = doc(db, "client", docId)
       await updateDoc(odData, { ...clientDoc })
       alert("Dados atualizado com sucesso!")
 
@@ -89,22 +77,6 @@ const Client = () => {
       cleanUseState();
     }
 
-  }
-
-  const handleDeleteClientDoc = async () => {
-
-    const confirmAction = confirm('Está ação não poderá  ser desfeita. Tem certeza disso?')
-
-    if (confirmAction) {
-
-      const clientRefDoc = doc(db, `${location.state.collectionName}`, docId)
-
-      await deleteDoc(clientRefDoc)
-
-      navigate('/')
-    }
-
-    return
   }
 
   // Functions
@@ -118,18 +90,53 @@ const Client = () => {
     setCity('')
   }
 
-  const handleFilter = () => {
-
-    const filtered = table.filter(el => el.clientName === filter)
-    setFiltered(filtered)
-
+  const handleFilterByLattter = (letter: string) => {
+    setFilter(letter)
   }
 
+  const handleBtnActionsEdit = (id: string) => {
+
+    const currRecord = table.filter(item => item.clientId === id)
+
+    setDocId(id)
+
+    handleCleanFields
+
+    setName(currRecord[0].clientName.trim())
+    setWsp(currRecord[0].clientWsp.trim())
+    setResidence(currRecord[0].clientResidence.trim())
+    setZipcode(currRecord[0].clentZipcode.trim())
+    setStreet(currRecord[0].clientStreet.trim())
+    setNeighborhood(currRecord[0].clientNeighborhood.trim())
+    setCity(currRecord[0].clientCity.trim())
+    setDocId(currRecord[0].clientId!)
+  }
+
+  const handleBtnActionsDelete = async (id: string) => {
+    try {
+      if (confirm('Esta ação não poderá ser desfeita. Continuar?')) {
+        deleteFunc(db, 'client', id)
+      }
+    } catch (error) {
+      console.error(error);
+
+    }
+  }
+
+  const handleCleanFields = () => {
+    setName('')
+    setWsp('')
+    setResidence('')
+    setZipcode('')
+    setStreet('')
+    setNeighborhood('')
+    setCity('')
+    setDocId('')
+
+  }
   // Use Effects
   useEffect(() => {
     const querySnapshot = getDocs(collection(db, 'client'))
-
-    let list: IClientData[] = []
 
     querySnapshot.then(snapshot => {
       snapshot.forEach(doc => {
@@ -148,8 +155,6 @@ const Client = () => {
 
       })
     })
-    console.log(list.length);
-
   }, [])
 
   useEffect(() => {
@@ -182,78 +187,116 @@ const Client = () => {
   }, [onSave])
 
   useEffect(() => {
-    if (filter === "") {
-      setFiltered([])
-    }
+
+    const filterTable = table.filter((el) => {
+      const A = el.clientName.toLocaleLowerCase().trim()
+      const B = filter.toLocaleLowerCase().trim()
+
+      if (A.indexOf(B) !== -1) {
+        return el
+      }
+    })
+
+    setFiltered([])
+    const unique = [...new Set(filterTable)]
+
+    setFiltered(unique)
   }, [filter])
 
   return (
     <main className={styles.container}>
+      <h1>Informções do Cliente</h1>
       <section>
-        <h1>Informções do Cliente</h1>
-        <div className={styles.actions}>
-          <button onClick={handleDeleteClientDoc}>Deletar</button>
-        </div>
         <form className={styles.form} onSubmit={handleClientDoc}>
           <fieldset className={styles.col_1}>
             <legend>Dados do cliente</legend>
-            <Input
-              type='text'
-              placeholder='Digite o nome do cliente...'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-
-            <Input
-              type='tel'
-              placeholder='Whatsapp...'
-              value={wsp}
-              onChange={(e) => setWsp(e.target.value)}
-            />
-
-            <Input
-              type='text'
-              placeholder='Residência: lote e quadra, apt, bloco...'
-              value={residence}
-              onChange={(e) => setResidence(e.target.value)}
-            />
+            <div className={styles.test}>
+              <Input
+                type='text'
+                label='Cliente'
+                placeholder='Digite o nome do cliente...'
+                value={name}
+                style={custom_style}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                type='tel'
+                label='Whatsapp'
+                placeholder='Whatsapp...'
+                value={wsp}
+                style={custom_style}
+                onChange={(e) => setWsp(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                label='Residência'
+                placeholder='Residência: lote e quadra, apt, bloco...'
+                value={residence}
+                style={custom_style}
+                onChange={(e) => setResidence(e.target.value)}
+              />
+            </div>
           </fieldset>
           <fieldset className={styles.col_2}>
             <legend>Dados de endereço</legend>
-            <Input
-              type='text'
-              placeholder='Digite o CEP...'
-              style={inputStyle_2}
-              value={zipcode}
-              onChange={(e) => setZipcode(e.target.value)}
-            />
-            <Input
-              type='text'
-              placeholder='Digite a rua...'
-              style={inputStyle_1}
-              value={street}
-              onChange={(e) => setStreet(e.target.value)}
-            />
-            <Input
-              type='text'
-              placeholder='Digite o  bairro...'
-              value={neighborhood}
-              onChange={(e) => setNeighborhood(e.target.value)}
-            />
-            <Input
-              type='text'
-              placeholder='Digite a cidade...'
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
+            <div>
+              <Input
+                type='text'
+                label='CEP'
+                placeholder='Digite o CEP...'
+                style={custom_style}
+                value={zipcode}
+                onChange={(e) => setZipcode(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                label='Rua'
+                placeholder='Digite a rua...'
+                style={custom_style}
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                label='Bairro'
+                placeholder='Digite o  bairro...'
+                value={neighborhood}
+                style={custom_style}
+                onChange={(e) => setNeighborhood(e.target.value)}
+              />
+            </div>
+            <div>
+              <Input
+                type='text'
+                label='Cidade'
+                placeholder='Digite a cidade...'
+                value={city}
+                style={custom_style}
+                onChange={(e) => setCity(e.target.value)}
+              />
+            </div>
           </fieldset>
-          {
-            !loading ? (<button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>
-              {!loading ? "Confirmar" : "Salvando dados..."}
-            </button>) : (
-              (<div className="loader"></div>)
-            )
-          }
+          <div className={styles.btn_submit}>
+            {
+              !loading ? (<button type='submit'>
+                {!loading ? "Confirmar" : "Salvando dados..."}
+              </button>) : (
+                (<div className="loader"></div>)
+              )
+            }
+            <button type='button' onClick={handleCleanFields}>Limpar</button>
+          </div>
+          <div>
+
+          </div>
         </form>
       </section>
 
@@ -263,11 +306,8 @@ const Client = () => {
             type='text'
             placeholder='Pesquisar cliente...'
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onChange={(e) => handleFilterByLattter(e.target.value)}
           />
-          {
-            filterd.length === 0 ? <button type='button' onClick={handleFilter}>Buscar</button> : ""
-          }
         </div>
         <div className={styles.head}>
           <div>
@@ -289,25 +329,37 @@ const Client = () => {
             <span>Cidade</span>
           </div>
         </div>
-        <ul className={styles.table_list}>
+        < ul className={styles.table_list}>
           {
             filterd.length === 0 ? table.map((doc, index) => (
               <li key={index}>
-                <span>{doc.clientName}</span>
-                <span>{doc.clientWsp}</span>
-                <span>{doc.clientResidence}</span>
-                <span>{doc.clientStreet}</span>
-                <span>{doc.clientNeighborhood}</span>
-                <span>{doc.clientCity}</span>
+                <div>
+                  <span>{doc.clientName}</span>
+                  <span>{doc.clientWsp}</span>
+                  <span>{doc.clientResidence}</span>
+                  <span>{doc.clientStreet}</span>
+                  <span>{doc.clientNeighborhood}</span>
+                  <span>{doc.clientCity}</span>
+                </div>
+                <div className={styles.li_actions}>
+                  <button className={styles.edit} onClick={() => handleBtnActionsEdit(doc.clientId!)}>Editar</button>
+                  <button className={styles.trash} onClick={() => handleBtnActionsDelete(doc.clientId!)}>Excluir</button>
+                </div>
               </li>
             )) : filterd.map((doc, index) => (
               <li key={index}>
-                <span>{doc.clientName}</span>
-                <span>{doc.clientWsp}</span>
-                <span>{doc.clientResidence}</span>
-                <span>{doc.clientStreet}</span>
-                <span>{doc.clientNeighborhood}</span>
-                <span>{doc.clientCity}</span>
+                <div>
+                  <span>{doc.clientName}</span>
+                  <span>{doc.clientWsp}</span>
+                  <span>{doc.clientResidence}</span>
+                  <span>{doc.clientStreet}</span>
+                  <span>{doc.clientNeighborhood}</span>
+                  <span>{doc.clientCity}</span>
+                </div>
+                <div className={styles.li_actions}>
+                  <button className={styles.edit} onClick={() => handleBtnActionsEdit(doc.clientId!)}>Editar</button>
+                  <button className={styles.trash} onClick={() => handleBtnActionsDelete(doc.clientId!)}>Excluir</button>
+                </div>
               </li>
             ))
           }

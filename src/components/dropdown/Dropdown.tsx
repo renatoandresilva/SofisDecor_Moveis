@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import styles from './Dropdown.module.css'
 
-import { Dopdown } from '../../interfaces/IElements/IElements'
+import { FaX } from 'react-icons/fa6'
+// import { ContextOnLoading } from '../../contexts/ContextLoading'
+
+import { Dopdown } from './dropdownSetting'
 
 const Dropdown = (props: Dopdown) => {
+
     const [input, setInput] = useState('');
     const [showOptions, setShowOptions] = useState(false)
 
@@ -14,34 +18,44 @@ const Dropdown = (props: Dopdown) => {
 
     const setInputData = (str: string) => {
 
-        if (str !== "") {
-            props.change(str)
-            setInput(str)
-            setShowOptions(false)
-        }
+
+        setInput(str)
     }
 
-    useEffect(() => {
-        if (props.update !== undefined) {
-            setInput(props.update)
-        }
-    })
+    const handleChange = (e: ChangeEvent) => {
+
+        const target = e.target as HTMLInputElement
+        // const { name, value } = target
+
+        console.log(target);
+
+        // setFormValue({ ...formValue, [name]: value })
+    }
+
+    const handleClean = () => {
+        setInput('')
+    }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.container_input}>
-                <label>{props.label}</label>
-                <input
-                    type="text"
-                    placeholder={props.placeholder ?? 'Selecione uma opção...'}
-                    className={styles.input}
-                    value={input}
-                    onChange={(e) => props.change(e.target.value)}
-                    onClick={handleShowOptions}
-                />
+        <div className={styles.dropdown}>
 
-            </div>
-            <ul className={styles.options}>
+            <label className={styles.dropdown_input}>
+                {props.label}
+                <div className={styles.dropdown_input_container}>
+                    <input
+                        {...props}
+                        value={input === '' ? props.input : input}
+                        className={styles.input}
+                        onChange={handleChange}
+                        onClick={handleShowOptions}
+                    />
+                    <button type='button' onClick={handleClean} className={styles.clean}>
+                        <FaX />
+                    </button>
+                </div>
+            </label>
+
+            <ul className={styles.options} style={props.owner_styles}>
                 {showOptions && props.contents?.map((content) => (<li key={content} onClick={() => setInputData(content)}>
                     <span>{content}</span>
                 </li>))}

@@ -1,0 +1,46 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.input_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    position: relative;
+    border-radius: 6px;
+    background-color: #fdfdfd;
+}
+
+.input_container input {
+    display: none;
+}
+
+
+
+
+
+
+/* 
+.button {
+    height: 35px;
+    width: 35px;
+    background-color: #fff;
+    border: .8px solid #ccc;
+}
+
+.button:hover {
+    background-color: #fff;
+}
+
+button {
+    padding: 4px;
+}
+
+.icon {
+    pointer-events: painted;
+} */

@@ -1,19 +1,35 @@
-import { InputProps } from "../../interfaces/IElements/IElements";
-import styles from "./Input.module.css"
+import { InputHTMLAttributes, CSSProperties } from 'react';
+
+import styles from './Input.module.css'
+
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+    label?: string;
+    style?: CSSProperties;
+}
 
 const Input = (props: InputProps) => {
 
-    const setStyle = props.style
-
     return (
-        <>
-            {props.label && (<label>{props.label}</label>)}
-            {
-                !setStyle ? (<input {...props} className={styles.input} />) : (<input {...props} style={props.style} />)
-            }
-        </>
+
+        <label className={styles.container}>
+            <span>{props.label}</span>
+
+            <input  {...props} />
+        </label>
+
     )
 }
 
 export default Input
 
+
+
+
+// const selectStyle: CSSProperties = {
+//     flex: "1 0 60%",
+//     height: "40px",
+//     width: "100%",
+//     padding: ".7rem 2em",
+//     border: ".8px solid #ccc",
+//     borderRadius: "6px",
+// }

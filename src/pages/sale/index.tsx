@@ -1,60 +1,79 @@
-import { FormEvent, useState, useEffect } from "react"
-import { HiPencilSquare } from "react-icons/hi2"
-import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { FormEvent, useState, useEffect, ChangeEvent } from "react"
+import { FaCheck } from "react-icons/fa6"
+
+import { FaX } from 'react-icons/fa6'
+import { collection, getDocs } from "firebase/firestore"
 import { useLocation, useNavigate } from "react-router-dom"
 
 import { db } from "../../service/dataConnection"
+import {
+  addDocFnc,
+  updateDocFunc,
+  deleteFunc,
+  getDocFnc,
+  uniqueItemList
+} from "../../interfaces/IUtilis/IUtilitis"
 
 import Input from "../../components/Input/Input"
 
 import styles from "./Sale.module.css";
+import { custom_style } from "../../interfaces/custom_styles/genral"
 import '../../App.css'
 // Interfaces and Types
-import { ISale, PaymentInfo, CurrentProduct } from "../../interfaces/ISale/ISale";
-import { IFirestore } from "../../interfaces/IUtilis/IUtilitis";
-import Dropdown from "../../components/dropdown/Dropdown"
+import { PaymentInfo, Product, SaleStruc } from './saleSettings'
+
+const saleForm: SaleStruc = {
+  products: [],
+  initValue: 0,
+  purchcaseDate: "",
+  qtdInstallment: 0,
+  valueInstallment: 0,
+  paymentAccount: '',
+  dueDate: '',
+  paymentInfoList: [],
+  clientName: '',
+}
 
 const Sale = () => {
+
   const [loading, setLoading] = useState(false)
   const [onSave, setOnsave] = useState(false)
+  const [dropdownShowOptions, setDropdownShowOptions] = useState(false)
+  const [dropdownBalanceOptions, setDropdownBalanceOptions] = useState(false)
+  const [product, setProduct] = useState('')
+  const [price, setPrice] = useState(0)
+  const [checkbox, setCheckbox] = useState(false)
+  const [valuePaid, setValuePaid] = useState(0)
+  const [isPaid, setIsPaid] = useState(false)
+  const [calcCurrProduct, setCalcCurrProduct] = useState(0)
+  const [isUpadate, setIsUpdate] = useState(false)
+  const [id, setId] = useState('')
 
-  const [nameProduct, setNameProduct] = useState<string>('');
-  const [priceProduct, setPriceProduct] = useState<number>(0);
-  const [qtdInstallment, setQtyInstallment] = useState<number>(0);
-  const [valueInstallment, setValueInstallment] = useState<number>(0);
-  const [dueDate, setDueDate] = useState<number>(0);
-  const [purchcaseDate, setPurchcaseDate] = useState<string>('');
-  const [initVlue, setInitValue] = useState<number>(0);
+  const [formInput, setFormInput] = useState<SaleStruc>(saleForm)
 
-  const [numberInstallmentPaid, setNumberInstallmentPaid] = useState<number>(0);
-  const [valueInstallmentPaid, setValueInstallmentPaid] = useState<number>(0);
-  const [nameClient, setNameClient] = useState<string>('');
+  const [currentProducts, setCurrentProducts] = useState<Product[]>([])
+  const [paymentList, setPaymentList] = useState<PaymentInfo[]>([])
+  const [paymentIndex, setPaymentIndex] = useState("")
+  const [clientList, setClientList] = useState<string[]>([])
+  const [balance, setBalance] = useState<string[]>([])
 
-  const [updateProductdByiIndex, setUpdateProductByiIndex] = useState<number>(-1);
-  const [updatePaymentdByiIndex, setUpdatePaymentByiIndex] = useState<number>(-1);
-  const [saleId, setSaleId] = useState<string>('');
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const [currentProducts, setCurrentProducts] = useState<CurrentProduct[]>([]);
-  const [paymentList, setPaymentList] = useState<PaymentInfo[]>([]);
-  const [clientList, setClientList] = useState<string[]>([]);
+  if (clientList.length === 0) {
 
-  const [refreshProducts, setRefreshProducts] = useState<boolean>(false);
-  const [refreshPayments, setRefreshPayments] = useState<boolean>(false);
+    getClients()
+    getBalance()
+  }
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  let index: number = 0;
+  if (id !== '' && isUpadate) {
 
-  const saleData: ISale = {
-    products: currentProducts,
-    purchcaseDate: purchcaseDate,
-    initVlue: initVlue,
-    qtdInstallment: qtdInstallment,
-    valueInstallment: valueInstallment,
-    dueDate: dueDate,
-    paymentInfo: paymentList,
-    docClientId: '',
-    clientName: `${nameClient}`.trim()
+    if (id !== '0') {
+
+      getSaleById()
+      setIsUpdate(false)
+    }
+
   }
 
   // handles functions 
@@ -62,368 +81,527 @@ const Sale = () => {
     e.preventDefault();
     setOnsave(true);
 
-    if (location.state === null) {
+    try {
 
-      setLoading(true);
-      try {
+      if (id === '0') {
 
-        const data = collection(db, "client")
-        const queryRef = query(data, where("clientName", "==", saleData.clientName))
+        const paymentInfoList = createInstalments(formInput.qtdInstallment, formInput.purchcaseDate)
 
-        const querySnapshot = await getDocs(queryRef)
-        querySnapshot.forEach(doc => {
-          saleData.docClientId = doc.id
-          setNameClient(doc.data().clientName)
+        formInput.products = currentProducts
+
+        paymentInfoList.forEach((date, index) => {
+
+          const data: PaymentInfo = {
+            numberInstallment: index + 1,
+            paymentDate: date,
+            valuePaid: 0,
+            client: formInput.clientName,
+            installment: formInput.valueInstallment,
+            isPaid: false,
+            rest: 0,
+          }
+
+          formInput.paymentInfoList.push(data)
         })
 
-        const newDoc = collection(db, "sale")
-        await addDoc(newDoc, saleData)
-          .then(res => {
+        await addDocFnc(db, 'sale', formInput)
 
-            if (res.id !== "") {
-              alert("Ação executada com sucesso!")
-
-              setOnsave(false)
-              navigate('/')
-              return
-            }
-
-            alert("Ação executada com sucesso!.")
-          })
-      } catch (error) {
-        alert("Falha ao executar essa ação: " + error)
+        handleClean()
+        setOnsave(false);
+        navigate("/sale", { state: true })
+        return
       }
-    } else {
-      const currDoc = doc(db, `${location.state.collectionName}`, saleId);
 
-      const data = collection(db, "client")
-      const queryRef = query(data, where("clientName", "==", saleData.clientName))
+      await updateDocFunc(db, 'sale', id, formInput)
 
-      const querySnapshot = await getDocs(queryRef)
-      querySnapshot.forEach(doc => {
-        saleData.docClientId = doc.id
-      })
-
-      await updateDoc(currDoc, { ...saleData })
-      alert("Dados atualizado com sucesso!")
-      setLoading(false);
-      navigate('/')
+      handleClean()
+      setOnsave(false);
+      navigate("/sale", { state: true })
+    } catch (error) {
+      console.log('Erro ao executar essa operação: ' + error);
     }
+  }
+
+  const handleFormChange = (e: FormEvent) => {
+
+    const target = e.target as HTMLInputElement
+
+    setFormInput({ ...formInput, [target.name]: target.value })
   }
 
   const handleAddProduct = () => {
 
-    if (nameProduct === "" || priceProduct === 0) return alert('Preencha os campos obrigatórios')
-
-    const currentProduct: CurrentProduct = {
-      prod: nameProduct,
-      price: priceProduct
+    if (product === '' || price === 0) {
+      return alert('Produto e Preço devem ser informados.')
     }
 
-    if (updateProductdByiIndex === -1 && updatePaymentdByiIndex) {
-      setCurrentProducts(current => [...current, currentProduct])
-      setNameProduct('')
-      setPriceProduct(0)
-      return
+    const struct: Product = {
+      product: '',
+      price: 0
     }
 
-    if (updateProductdByiIndex !== -1) {
+    struct.product = product
+    struct.price = price
 
-      currentProducts[updateProductdByiIndex].prod = nameProduct
-      currentProducts[updateProductdByiIndex].price = priceProduct
+    setCurrentProducts(item => [...item, struct])
+    setCalcCurrProduct(item => item + struct.price)
 
-      setRefreshProducts(false)
-    }
+    setProduct('')
+    setPrice(0)
   }
 
-  const handleSetPaymentList = () => {
-
-    if (numberInstallmentPaid === 0 || valueInstallmentPaid === 0) return
-
-    const newInfo: PaymentInfo = {
-      paymentDate: getDate(),
-      numberInstallment: numberInstallmentPaid,
-      valuePaid: valueInstallmentPaid
-    }
-
-    if (updatePaymentdByiIndex === -1) {
-      setPaymentList(item => [...item, newInfo])
-
-      setNumberInstallmentPaid(0)
-      setValueInstallmentPaid(0)
-      return
-    }
-
-    if (updatePaymentdByiIndex !== -1) {
-      paymentList[updatePaymentdByiIndex].numberInstallment = numberInstallmentPaid
-      paymentList[updatePaymentdByiIndex].valuePaid = valueInstallmentPaid
-
-      setRefreshPayments(false)
-    }
+  const handleShowOptions = () => {
+    !dropdownShowOptions ? setDropdownShowOptions(true) : setDropdownShowOptions(false)
   }
 
-  const handleSetProductField = (ind: number) => {
-    index = ind
-    setRefreshProducts(true)
-  }
-
-  const handleSetPaymentField = (ind: number) => {
-
-    index = ind
-    setRefreshPayments(true)
+  const handleBalanceOptions = () => {
+    !dropdownBalanceOptions ? setDropdownBalanceOptions(true) : setDropdownBalanceOptions(false)
   }
 
   const handlDelete = async () => {
 
-    console.log('estou no delete');
+    if (confirm('Esta ação não poderá ser defeita. Tem certeza?')) {
 
-
-    const confirmAction = confirm('Está ação não poderá  ser desfeita. Tem certeza disso?')
-
-    if (confirmAction) {
-
-      const saletRefDoc = doc(db, `${location.state.collectionName}`, saleId)
-
-      await deleteDoc(saletRefDoc)
-
-      navigate('/')
+      await deleteFunc(db, 'sale', id)
+      handleClean()
+      navigate("/")
     }
 
-    return
   }
 
-  const handleAddSelectClient = (client: string) => {
-    console.log(client);
+  const handleClean = () => {
 
-    setNameClient(client)
+    const formCLeared: SaleStruc = {
+      clientName: '',
+      dueDate: '',
+      initValue: 0,
+      paymentAccount: '',
+      products: [],
+      valueInstallment: 0,
+      paymentInfoList: [],
+      purchcaseDate: '',
+      qtdInstallment: 0,
+    }
+
+    setFormInput(formCLeared)
   }
+
+  const getSaleList = () => {
+    navigate('/sale')
+  }
+
+  const handleSetProductField = (index: number) => {
+    const currProduct = currentProducts[index];
+
+    setProduct(currProduct.product)
+    setPrice(currProduct.price)
+  }
+
+  const handleSetPaymentField = (index: number) => {
+    const currPayment = paymentList[index]
+
+    setValuePaid(currPayment.valuePaid)
+    setIsPaid(currPayment.isPaid!)
+
+    setCheckbox(false)
+    setPaymentIndex('')
+    setPaymentIndex(index.toString())
+
+  }
+
+  const checkboxChange = (change: ChangeEvent) => {
+
+    const target = change.target as HTMLInputElement
+    setCheckbox(target.checked);
+    target.name
+
+    const data = formInput.paymentInfoList[Number(paymentIndex)]
+
+    data.valuePaid = valuePaid
+    data.isPaid = !checkbox ? true : false
+  }
+
   // Functions
-  function getDate(): string {
+  function createInstalments(qtd: number, purchcaseDate: string) {
 
-    const date = new Date()
+    const list = []
 
-    const currDay = date.getDate()
-    const currMonth = date.getMonth() + 1
-    const currYear = date.getFullYear()
+    // hendle purchcaseDate
+    let date_stamp = purchcaseDate.split('-')
 
-    return `${currDay < 10 ? "0" + currDay : currDay}/${currMonth < 10 ? "0" + currMonth : currMonth}/${currYear}`
-  }
+    const [year, month, date] = date_stamp
 
-  async function getDatefromDatabse(databse: IFirestore, collectionName: string, attr: string): Promise<string[]> {
-    console.log('estou na função')
-    let list: string[] = []
+    let dateRef = new Date(Number(year), Number(month), Number(date))
+    let counter = 0
+    let counter1 = 0
 
-    console.log(collection(databse, collectionName));
+    let updateYear = 0
+    let index = 1
 
+    while (index <= qtd) {
+      index++
 
-    const dataQuery = query(collection(databse, collectionName), where(attr.trim(), "!=", ""))
-    const dataSnap = await getDocs(dataQuery)
+      if (dateRef.getMonth() + index <= 21) {
 
-    dataSnap.forEach(snap => {
+        counter = dateRef.getMonth() + index
+        updateYear = dateRef.getFullYear()
 
-      list.push(snap.data().clientName);
-    });
+      } else if (counter1 < 13) {
+
+        counter1 = counter1 + 1
+        counter = counter1
+        updateYear = dateRef.getFullYear() + 1
+      } else {
+
+        throw new Error("Quantidade de parcelas não suportada");
+      }
+
+      const date = `${updateYear}-${counter}-${dateRef.getDate()}`
+
+      date_stamp = date.split('-')
+      list.push(date);
+    }
 
     return list
   }
 
-  // UseEffects
-  useEffect(() => {
-    const getList = getDatefromDatabse(db, "client", "clientName")
+  async function getClients() {
 
-    getList.then(resp => {
-      setClientList(resp)
+    const clientRef = await getDocs(collection(db, 'client'))
+
+    clientRef.docs.forEach(doc => {
+
+      setClientList(item => [...item, doc.data().clientName])
+    })
+  }
+
+  function setInputData(content: string) {
+
+    setFormInput({ ...formInput, ['clientName']: content })
+  }
+
+  function setInputContent(content: string) {
+
+    setFormInput({ ...formInput, ['paymentAccount']: content })
+  }
+
+  async function getBalance() {
+
+    const balancetRef = await getDocs(collection(db, 'balance'))
+
+    const list: string[] = []
+
+
+    balancetRef.docs.forEach(doc => {
+      list.push(doc.data().Owner)
     })
 
-    if (location.state !== null) {
+    const uniqueList = uniqueItemList(list) as string[]
 
-      const saleRef = collection(db, `${location.state.collectionName}`)
-      const q = query(saleRef, where("clientName", "==", `${location.state.search}`))
+    setBalance(uniqueList)
+  }
 
-      getDocs(q)
-        .then(Response => {
-          Response.docs.forEach(doc => {
-            setSaleId(doc.id)
-            setCurrentProducts(doc.data().products)
-            setPurchcaseDate(doc.data().purchcaseDate)
-            setInitValue(doc.data().initVlue)
-            setQtyInstallment(doc.data().qtdInstallment)
-            setValueInstallment(doc.data().valueInstallment)
-            setDueDate(doc.data().dueDate)
-            setPaymentList(doc.data().paymentInfo)
-            setNameClient(doc.data().clientName)
-          });
-        })
+  async function getSaleById() {
+
+    try {
+      const saleData = await getDocFnc(db, 'sale', id)
+
+      const data = saleData as SaleStruc
+
+      setFormInput(data)
+
+    } catch (error) {
+      console.error(error);
     }
+  }
 
+  // Use Effect
+  useEffect(() => {
+
+    const elementId = location.pathname.slice(location.pathname.lastIndexOf('/') + 1);
+
+    if (elementId) {
+      setId(elementId)
+      setIsUpdate(true)
+    }
   }, [])
 
   useEffect(() => {
 
-    if (refreshProducts) {
-      const fild = currentProducts[index]
+    if (formInput.products.length > 0) {
 
-      setNameProduct(fild.prod)
-      setPriceProduct(fild.price)
-      setUpdateProductByiIndex(index)
+      setCurrentProducts(formInput.products)
+      formInput.products.forEach(item => {
+        setCalcCurrProduct(0)
+        setCalcCurrProduct(num => num + item.price)
+      })
     }
 
-  }, [refreshProducts])
+    if (formInput.paymentInfoList.length > 0) {
 
-  useEffect(() => {
-    if (refreshPayments) {
-      const fild = paymentList[index]
-
-      setNumberInstallmentPaid(fild.numberInstallment)
-      setValueInstallmentPaid(fild.valuePaid)
-      setUpdatePaymentByiIndex(index)
+      setPaymentList(formInput.paymentInfoList)
     }
-  }, [refreshPayments])
+
+  }, [formInput])
 
   useEffect(() => {
     onSave ? setLoading(true) : setLoading(false)
   }, [onSave])
 
   return (
-    <div>
-      <h1>Informações de Vendas</h1>
-      <div className={styles.actions}>
-        <button onClick={handlDelete}>Deletar</button>
-      </div>
-      <form className={styles.form} onSubmit={handleSale}>
-        <fieldset className={styles.fild_1}>
-          <legend>Dados da venda:</legend>
-          <div>
-            <Input
-              type='text'
-              placeholder='Nome do produto...'
-              value={nameProduct}
-              onChange={(e) => setNameProduct(e.target.value)}
-              label="Produto:"
-            />
-          </div>
-          <div>
-            <Input
-              type='number'
-              label="Preço:"
-              placeholder='Valor do produto...'
-              value={priceProduct}
-              onChange={(e) => setPriceProduct(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <button type="button" className={styles.button} onClick={handleAddProduct}>
-              adicionar
-            </button>
-          </div>
-        </fieldset>
-        <hr></hr>
-        <fieldset className={styles.fild_2}>
-          <legend>Dados de parcelamento:</legend>
-          <div>
-            <Input
-              type='number'
-              label='Entrada'
-              value={initVlue}
-              onChange={(e) => setInitValue(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <Input
-              type='number'
-              label='Vencimento'
-              value={dueDate}
-              onChange={(e) => setDueDate(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <Input
-              type='number'
-              label="Valor da parcela:"
-              value={valueInstallment}
-              onChange={(e) => setValueInstallment(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <Input
-              type='number'
-              label="Parcelado em:"
-              value={qtdInstallment}
-              onChange={(e) => setQtyInstallment(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <Input
-              type='date'
-              label='Data da Compra'
-              value={purchcaseDate}
-              onChange={(e) => setPurchcaseDate(e.target.value)}
-            />
-          </div>
-          <div>
-            <Dropdown contents={clientList} label="Cliente" change={handleAddSelectClient} update={nameClient} />
-          </div>
-        </fieldset>
-        <hr></hr>
-        {location.state !== null ? (
-          <fieldset>
-            <legend>Dados do pagamento:</legend>
+    <main className={styles.container}>
+      <section className={styles.main_col_1}>
+        <h1>Informações de Vendas</h1>
+        <div className={styles.actions}>
+          <button onClick={handlDelete}>Excluir</button>
+          <button onClick={getSaleList}>Ver Lista</button>
+        </div>
+      </section>
+      <section className={styles.main_col_2}>
+        <form className={styles.form} onSubmit={handleSale}>
+          <fieldset className={styles.fild_1}>
             <div>
               <Input
-                type='number'
-                label='Parcela de número:'
-                value={numberInstallmentPaid}
-                onChange={(e) => setNumberInstallmentPaid(Number(e.target.value))}
+                type='text'
+                placeholder='Nome do produto...'
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+                label="Produto:"
+                style={custom_style}
               />
             </div>
             <div>
               <Input
                 type='number'
-                label='Valor Pago:'
-                value={valueInstallmentPaid}
-                onChange={(e) => setValueInstallmentPaid(Number(e.target.value))}
+                label="Preço:"
+                min={0}
+                placeholder='Valor do produto...'
+                value={price!}
+                style={custom_style}
+                onChange={(e) => setPrice(Number(e.target.value))}
               />
             </div>
-            <button type="button" id="button" className={styles.button} onClick={handleSetPaymentList}>
-              Inserir pagamento
-            </button>
+            <div>
+              <button type="button" className={styles.button} onClick={handleAddProduct}>
+                Inserir
+              </button>
+            </div>
+          </fieldset>
+          <fieldset className={styles.fild_2}>
+            <div>
+              <Input
+                type='number'
+                label='Entrada'
+                name='initValue'
+                min={0}
+                value={formInput.initValue}
+                style={custom_style}
+                data-entry='initValue'
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <Input
+                type='number'
+                label='Vencimento'
+                name="dueDate"
+                min={0}
+                max={31}
+                style={custom_style}
+                value={formInput.dueDate}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <Input
+                type='number'
+                label="Valor da parcela:"
+                name="valueInstallment"
+                min={0}
+                value={formInput.valueInstallment}
+                style={custom_style}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <Input
+                type='number'
+                name='qtdInstallment'
+                label="Qtd"
+                min={0}
+                max={30}
+                value={formInput.qtdInstallment}
+                style={custom_style}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <Input
+                type='date'
+                name='purchcaseDate'
+                label='Data da Compra'
+                value={formInput.purchcaseDate}
+                style={custom_style}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+
+              <div className={styles.dropdown}>
+
+                <label className={styles.dropdown_input}>
+                  <span>cliente</span>
+                  <div className={styles.dropdown_input_container} >
+                    <input
+                      type='text'
+                      name='clientName'
+                      placeholder={'Selecione uma opção...'}
+                      value={formInput.clientName}
+                      className={styles.input_dropdown}
+                      onChange={handleFormChange}
+                      onClick={handleShowOptions}
+                    />
+                    <button type='button' onClick={handleClean} className={styles.dropdown_clean}>
+                      <FaX />
+                    </button>
+                  </div>
+                </label>
+
+                <ul className={styles.options}>
+                  {dropdownShowOptions && clientList?.map((content, index) => (<li key={index} onClick={() => setInputData(content)}>
+                    <span>{content}</span>
+                  </li>))}
+                </ul>
+              </div>
+
+            </div>
+            <div>
+              {/* Conta*/}
+              <div className={styles.dropdown}>
+
+                <label className={styles.dropdown_input}>
+                  <span>Conta de Pagamento</span>
+                  <div className={styles.dropdown_input_container} >
+                    <input
+                      type='text'
+                      name='clientName'
+                      placeholder={'Selecione uma opção...'}
+                      value={formInput.paymentAccount}
+                      className={styles.input_balance}
+                      onChange={handleFormChange}
+                      onClick={handleBalanceOptions}
+                    />
+                    <button type='button' onClick={handleClean} className={styles.dropdown_clean}>
+                      <FaX />
+                    </button>
+                  </div>
+                </label>
+
+                <ul className={styles.options_balance}>
+                  {dropdownBalanceOptions && balance?.map((content, index) => (<li key={index} onClick={() => setInputContent(content)}>
+                    <span>{content}</span>
+                  </li>))}
+                </ul>
+              </div>
+            </div>
 
           </fieldset>
-        ) : ("")
-        }
-        {
-          !loading ? (<button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>
-            {!loading ? "Confirmar" : "Salvando dados..."}
-          </button>) : (
-            (<div className="loader"></div>)
-          )
-        }
-      </form>
-      <section className={styles.list}>
-        <h4>Produtos</h4>
-        <ul className={styles.list_container1}>
           {
-            (currentProducts.length > 0) && (currentProducts.map((item, i) => (
-              <li key={i}>
-                <span>{item.prod}.............{item.price}</span>
-                <button className={styles.setItem_btn} onClick={() => handleSetProductField(i)}><HiPencilSquare color="blue" size="30px" /></button>
-              </li>
-            )))
+            Number(id) !== 0 && (<fieldset className={styles.fild_3}>
+              <legend>Dados de pagamento</legend>
+              <div>
+                <Input
+                  type='number'
+                  label='Valor Pago:'
+                  style={custom_style}
+                  value={valuePaid}
+                  onChange={(e) => setValuePaid(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <label className={styles.checkbox}>
+                  <span className={styles.check_title}>Ativo</span>
+                  <div className={styles.check_input}>
+                    <input
+                      type='checkbox'
+                      name='isPaid'
+                      checked={isPaid}
+                      value={`${checkbox}`}
+                      onChange={checkboxChange}
+                    />
+                    <span>{checkbox ? <FaCheck size={20} /> : ''}</span>
+                  </div>
+                </label>
+              </div>
+            </fieldset>)
           }
-        </ul>
-        <h4>Lista de Parcelas Pagas</h4>
-        <ul className={styles.list_container1}>
+          <div className={styles.submit}>
+            {
+              !loading ? (<button type='submit' className={!loading ? styles.active_btn : styles.cancel_btn}>
+                {!loading ? "Confirmar" : "Salvando dados..."}
+              </button>) : (
+                (<div className="loader"></div>)
+              )
+            }
+          </div>
+        </form>
+        <div className={(currentProducts.length > 0 || paymentList.length > 0) ? styles.list : styles.dispay_none}>
+          <div className={styles.list_col1}>
+            <h4>Lista de Produtos</h4>
+            <ul className={styles.list_container1}>
+              {
+                (currentProducts.length > 0) && (currentProducts.map((item, i) => (
+                  <li key={i} className={styles.product}>
+                    <span>{item.product.padEnd(40, '.')} {`R$${item.price},00`}</span>
+                    <div className={styles.actions_li}>
+                      <span onClick={() => handleSetProductField(i)}>
+                        {
+                          id === '' ? 'Corrigir' : "Atualizar"
+                        }
+                      </span>
+                    </div>
+                  </li>
+                )))
+              }
+            </ul>
+            <div className={styles.calcCurrProduct}>
+              <span>Total</span>
+              <span>{`R$${calcCurrProduct},00`}</span>
+            </div>
+          </div>
           {
-            (paymentList.length > 0) && (paymentList.map((item, i) => (
-              <li key={i}>
-                <span>{item.numberInstallment}.............{item.valuePaid}</span>
-                <button className={styles.setItem_btn} onClick={() => handleSetPaymentField(i)}><HiPencilSquare color="blue" size="30px" /></button>
-              </li>
-            )))
+            (<div className={styles.list_col2}>
+              <h4>Lista de Parcelas Pagas</h4>
+              <div className={styles.payment_header}>
+                <span>Vencimento</span>
+                <span>Parcela</span>
+                <span>Valor Pago</span>
+                <span>Pago</span>
+                <span></span>
+              </div>
+              <ul className={styles.list_container1}>
+                {
+                  paymentList.length > 0 && paymentList.map((item, index) => (
+                    <li
+                      key={index}
+                      className={(item.isPaid) ? styles.mark_paid : ''}
+                    >
+                      <span>{item.paymentDate}</span>
+                      <span>{item.numberInstallment}</span>
+                      <span>{item.valuePaid}</span>
+                      <span>{item.isPaid ? 'Sim' : 'Não'}</span>
+                      <div>
+                        <button className={styles.setItem_btn} onClick={() => handleSetPaymentField(index)}>Atualizar</button>
+                      </div>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>)
           }
-        </ul>
+        </div>
       </section>
-    </div>
+    </main>
   )
 }
 
